@@ -1,0 +1,12 @@
+{
+  "name": "crypto-breadth",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "update": "node update.mjs",
+    "test": "node --test math.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

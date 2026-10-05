@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {dailyMap,breadth,average,GROUPS} from './math.mjs';
+test('ties and missing values do not create outperformers',()=>{const days=['2026-01-01','2026-01-02'];const m=v=>new Map(days.map((d,i)=>[d,v[i]]));const r=breadth([{id:'up'},{id:'tie'},{id:'missing'}],new Map([['up',m([100,120])],['tie',m([100,110])]]),m([100,110]),days[1]);assert.deepEqual(r,{value:50,eligible:2,total:3,winners:1});});
+test('outperforming can mean losing less than BTC',()=>{const p=new Map([['2026-01-01',100],['2026-01-02',95]]);const b=new Map([['2026-01-01',100],['2026-01-02',90]]);assert.equal(breadth([{id:'x'}],new Map([['x',p]]),b,'2026-01-02').value,100);});
+test('exclude trailing live observations',()=>{assert.equal(dailyMap([[Date.parse('2026-01-01'),1],[Date.parse('2026-01-01T12:00:00Z'),2]]).size,1);});
+test('SMA requires complete consecutive days',()=>{const p=Array.from({length:14},(_,i)=>({date:`2026-01-${String(i+1).padStart(2,'0')}`,groups:{x:{value:i+1}}}));assert.equal(average(p,'x',7)[6],4);assert.equal(average(p,'x',14)[13],7.5);assert.equal(average(p,'x',7)[5],null);p[4].groups.x.value=null;assert.equal(average(p,'x',7)[6],null);p.splice(4,1);assert.equal(average(p,'x',7)[6],null);});
+test('rank buckets partition 200 coins exactly',()=>{assert.deepEqual(GROUPS.map(g=>g.end-g.start),[10,10,30,50,100]);assert.equal(GROUPS.at(-1).end,200);});
